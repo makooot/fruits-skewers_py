@@ -6,7 +6,7 @@
 
 # Taskfile for a Python module development project
 # Requires for following tools:
-# - uv 
+# - uv
 # - ruff
 # - nox
 # - ty
@@ -35,6 +35,11 @@ tasks:
     cmds:
       - uv run ruff check
 
+  lint-fix:
+    desc: run linter and fix issues
+    cmds:
+      - uv run ruff check --fix
+
   typecheck:
     desc: run type checker
     cmds:
@@ -56,7 +61,14 @@ tasks:
     env:
       UV_VENV_CLEAR: 1
     cmds:
-      - uv run nox
+      - uv run nox -s tests
+
+  test-package:
+    desc: run tests on the installed package
+    env:
+        UV_VENV_CLEAR: 1
+    cmds:
+      - uv run nox -s tests_package
 
   update-project:
     desc: update this project
