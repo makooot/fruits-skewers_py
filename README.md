@@ -20,6 +20,7 @@ Here is a simple example of how to use the library:
 ```python
 from fruits_skewers import skewer
 
+
 command_detail:skewer.types.SkewerCommandDetail = {
     "options": [
         {"key": "verbose", "type": "bool", "cmd": ["-v", "--verbose"]},
@@ -27,16 +28,31 @@ command_detail:skewer.types.SkewerCommandDetail = {
         {"key": "host", "type": "string", "cmd": ["-H", "--host"]},
     ]
 }
-result = skewer.parser(command_detail)
-if result.get("verbose, False):
-    if "host" in result:
-        print(f"Host: {resut.get('host')}")
-    else:
-        print("Host: (default) ")
-    if "port" in result:
-        print(f"Port: {resut.get('port')}")
-    else:
-        print("Port: (default) ")
+try:
+    result = skewer.parser(command_detail)
+except skewer.types.ShowHelpException:
+    print("usage: COMMAND OPTIONS")
+    exit(0)
+except skewer.types.ShowVersionException:
+    print("COMMAND 0.0.0")
+    exit(0)
+except ValueError as e:
+    print(e)
+    exit(0)
+
+if result.get("verbose", False):
+	if "host" in result:
+		print(f"Host: {result.get('host')}")
+	else:
+		print("Host: (default) ")
+	if "port" in result:
+		print(f"Port: {result.get('port')}")
+	else:
+		print("Port: (default) ")
+argv = result.get('ARGV')
+print(f"ARGV: {len(argv)}")
+for i, arg in enumerate(argv):
+    print(f"  [{i}]: {arg}")
 ```
 
 ## Contributing
