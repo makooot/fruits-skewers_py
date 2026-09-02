@@ -7,7 +7,11 @@ Command line argument parser
 
 ## Installation
 
-coming soon
+You can install this library locally (or from GitHub) using `pip`:
+
+```bash
+pip install git+https://github.com/makooot/fruits-skewers_py.git@main
+```
 
 ## Quick Start
 
