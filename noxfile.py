@@ -17,7 +17,7 @@ def tests_package(s: nox.Session) -> None:
     """session for testing the package"""
 
     # install the package
-    s.install("./dist/fruits_skewers-0.2.0-py3-none-any.whl")
+    s.install("./dist/fruits_skewers-0.3.0-py3-none-any.whl")
 
     # run the tests
     s.run("python", "-m", "unittest", "discover", "-s", "test_package")
