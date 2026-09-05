@@ -1,7 +1,7 @@
 import typing
 import unittest
 
-from fruits_skewers.skewer import parser
+from fruits_skewers.skewer import skewer_parser
 from fruits_skewers.types import SkewerCommandDetail
 from fruits_skewers.types import SkewerShowHelpException
 from fruits_skewers.types import SkewerShowVersionException
@@ -16,25 +16,25 @@ class TestPackageSmart(unittest.TestCase):
     def test_empty(self):
         args = []
         command_detail: SkewerCommandDetail = {}
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["ARGV"], [])
 
     def test_args_1(self):
         args = ["v1"]
         command_detail: SkewerCommandDetail = {}
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["ARGV"], ["v1"])
 
     def test_args_2(self):
         args = ["v1", "v2"]
         command_detail: SkewerCommandDetail = {}
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["ARGV"], ["v1", "v2"])
 
     def test_args_3(self):
         args = ["v1", "v2", "v3"]
         command_detail: SkewerCommandDetail = {}
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["ARGV"], ["v1", "v2", "v3"])
 
     def test_short_bool(self):
@@ -42,7 +42,7 @@ class TestPackageSmart(unittest.TestCase):
         command_detail: SkewerCommandDetail = {
             "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["b"])
 
     def test_short_string_connected(self):
@@ -50,7 +50,7 @@ class TestPackageSmart(unittest.TestCase):
         command_detail: SkewerCommandDetail = {
             "options": [{"key": "s", "type": "string", "cmd": ["-s"]}]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["s"], "foo")
 
     def test_short_string_seperated(self):
@@ -58,7 +58,7 @@ class TestPackageSmart(unittest.TestCase):
         command_detail: SkewerCommandDetail = {
             "options": [{"key": "s", "type": "string", "cmd": ["-s"]}]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["s"], "foo")
 
     def test_short_int_connected(self):
@@ -66,7 +66,7 @@ class TestPackageSmart(unittest.TestCase):
         command_detail: SkewerCommandDetail = {
             "options": [{"key": "n", "type": "int", "cmd": ["-n"]}]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["n"], 123)
 
     def test_short_int_seperated(self):
@@ -74,7 +74,7 @@ class TestPackageSmart(unittest.TestCase):
         command_detail: SkewerCommandDetail = {
             "options": [{"key": "n", "type": "int", "cmd": ["-n"]}]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["n"], 123)
 
     def test_short_chain_bbb(self):
@@ -86,7 +86,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "c", "type": "bool", "cmd": ["-c"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["a"])
         self.assertTrue(result["b"])
         self.assertTrue(result["c"])
@@ -101,7 +101,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "s", "type": "string", "cmd": ["-s"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["a"])
         self.assertTrue(result["b"])
         self.assertEqual(result["s"], "")
@@ -116,7 +116,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "s", "type": "string", "cmd": ["-s"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["a"])
         self.assertTrue(result["b"])
         self.assertEqual(result["s"], "foo")
@@ -130,7 +130,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "n", "type": "int", "cmd": ["-n"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["a"])
         self.assertTrue(result["b"])
         self.assertEqual(result["n"], 1234)
@@ -142,7 +142,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "allow", "type": "bool", "cmd": ["--allow"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["allow"])
 
     def test_long_string_connected_empty(self):
@@ -152,7 +152,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["prefix"], "")
 
     def test_long_string_connected_any(self):
@@ -162,7 +162,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["prefix"], "I:")
 
     def test_long_string_seperated(self):
@@ -172,7 +172,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["prefix"], "I:")
 
     def test_long_int_connected(self):
@@ -182,7 +182,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["port"], 8080)
 
     def test_long_int_seperated(self):
@@ -192,7 +192,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["port"], 8080)
 
     def test_both_def_short(self):
@@ -202,7 +202,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["port"], 8080)
 
     def test_both_def_long(self):
@@ -212,7 +212,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertEqual(result["port"], 8080)
 
     def test_mix(self):
@@ -224,7 +224,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["allow"])
         self.assertEqual(result["prefix"], "BEEF")
         self.assertEqual(result["port"], 8080)
@@ -239,7 +239,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
             ]
         }
-        result = parser(command_detail, args)
+        result = skewer_parser(command_detail, args)
         self.assertTrue(result["allow"])
         self.assertEqual(result["port"], 8080)
         self.assertEqual(result["ARGV"], ["--prefix=BEEF", "jkl", "mno"])
@@ -248,19 +248,19 @@ class TestPackageSmart(unittest.TestCase):
         args = ["-#"]
         command_detail: SkewerCommandDetail = {}
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_short_undefined_name(self):
         args = ["-q"]
         command_detail: SkewerCommandDetail = {}
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_long_invalid_name(self):
         args = ["--###-###"]
         command_detail: SkewerCommandDetail = {}
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_invlid_int_1(self):
         args = ["--port", "0A"]
@@ -270,7 +270,7 @@ class TestPackageSmart(unittest.TestCase):
             ]
         }
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_invlid_int_2(self):
         args = ["--port=0A"]
@@ -280,7 +280,7 @@ class TestPackageSmart(unittest.TestCase):
             ]
         }
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_invlid_int_3(self):
         args = ["-p", "0A"]
@@ -290,7 +290,7 @@ class TestPackageSmart(unittest.TestCase):
             ]
         }
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_invlid_int_4(self):
         args = ["-p=0A"]
@@ -300,32 +300,32 @@ class TestPackageSmart(unittest.TestCase):
             ]
         }
         with self.assertRaises(SkewerValueError):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_invalid_name_1(self):
         args = ["--verbose"]
         with self.assertRaises(SkewerValueError):
-            parser({}, args)
+            skewer_parser({}, args)
 
     def test_invalid_name_2(self):
         args = ["-v"]
         with self.assertRaises(SkewerValueError):
-            parser({}, args)
+            skewer_parser({}, args)
 
     def test_short_showhelp_exception(self):
         args = ["-h"]
         command_detail: SkewerCommandDetail = {}
         with self.assertRaises(SkewerShowHelpException):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_long_showhelp_exception(self):
         args = ["--help"]
         command_detail: SkewerCommandDetail = {}
         with self.assertRaises(SkewerShowHelpException):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)
 
     def test_long_showversion_exception(self):
         args = ["--version"]
         command_detail: SkewerCommandDetail = {}
         with self.assertRaises(SkewerShowVersionException):
-            parser(command_detail, args)
+            skewer_parser(command_detail, args)

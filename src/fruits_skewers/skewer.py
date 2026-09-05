@@ -4,7 +4,7 @@ from . import parser_smart, types
 from .types import SkewerParserResult
 
 
-def parser(
+def skewer_parser(
     command_detail: types.SkewerCommandDetail,
     args: list[str] | None = None,
 ) -> SkewerParserResult:
