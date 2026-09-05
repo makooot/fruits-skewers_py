@@ -1,11 +1,15 @@
 import re
 import typing
 
-from . import types
-from .types import SkewerParserResult
-from .types import SkewerValueError
+from .types import (
+    SkewerCommandDetail,
+    SkewerParserResult,
+    SkewerShowHelpException,
+    SkewerShowVersionException,
+    SkewerValueError,
+)
 
-default_command_detail: types.SkewerCommandDetail = {
+default_command_detail: SkewerCommandDetail = {
     "arguments_key": "ARGV",
     "options": [],
     "help_option": ["--help"],
@@ -13,7 +17,7 @@ default_command_detail: types.SkewerCommandDetail = {
 }
 
 
-def get_arguments_key(command_detail: types.SkewerCommandDetail) -> str:
+def get_arguments_key(command_detail: SkewerCommandDetail) -> str:
     try:
         return command_detail["arguments_key"]
     except KeyError:
@@ -30,7 +34,7 @@ class OptionNames(typing.TypedDict, total=False):
     long: dict[str, OptionDictContent]
 
 
-def get_option_names(command_detail: types.SkewerCommandDetail) -> OptionNames:
+def get_option_names(command_detail: SkewerCommandDetail) -> OptionNames:
     option_names: OptionNames = {"short": {}, "long": {}}
     for option in command_detail.get("options", []):
         key = option["key"]
@@ -176,9 +180,9 @@ def parse_long_option(
 
 
 def parser(
-    command_detail: types.SkewerCommandDetail, args_raw: list[str]
-) -> types.SkewerParserResult:
-    values: types.SkewerParserResult = {}
+    command_detail: SkewerCommandDetail, args_raw: list[str]
+) -> SkewerParserResult:
+    values: SkewerParserResult = {}
     option_names = get_option_names(command_detail)
     args = args_raw[:]
     while args:
@@ -186,9 +190,9 @@ def parser(
         if arg == "--":
             break
         elif arg in ["-h", "--help"]:
-            raise types.SkewerShowHelpException()
+            raise SkewerShowHelpException()
         elif arg in ["--version"]:
-            raise types.SkewerShowVersionException()
+            raise SkewerShowVersionException()
         elif arg.startswith("--"):
             parse_long_option(arg, args, option_names, values)
         elif arg.startswith("-"):
