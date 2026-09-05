@@ -3,6 +3,7 @@ import typing
 
 from . import types
 from .types import SkewerParserResult
+from .types import SkewerValueError
 
 default_command_detail: types.SkewerCommandDetail = {
     "arguments_key": "ARGV",
@@ -37,7 +38,7 @@ def get_option_names(command_detail: types.SkewerCommandDetail) -> OptionNames:
         for name in option.get("cmd", []):
             match = re.match(r"^(--?)(.*)", name)
             if not match:
-                raise ValueError("FATAL")
+                raise SkewerValueError("FATAL")
             if match.group(1) == "--":
                 option_names["long"][match.group(2)] = {"type": type, "key": key}
             elif match.group(1) == "-":
@@ -53,12 +54,12 @@ def parse_short_option(
 ) -> None:
     match = re.match(r"^-([a-zA-Z]*)(([a-zA-Z])(=(.*))?)", arg)
     if not match:
-        raise ValueError(f"Invalid option: {arg}")
+        raise SkewerValueError(f"Invalid option: {arg}")
     for option_name in list(match.group(1)):
         try:
             option_dict_content = option_dict["short"][option_name]
         except KeyError:
-            raise ValueError(f"Invalid option: {arg}")
+            raise SkewerValueError(f"Invalid option: {arg}")
         option_key = option_dict_content["key"]
         if option_dict_content["type"] == "bool":
             option_value = True
@@ -66,9 +67,9 @@ def parse_short_option(
             option_dict_content["type"] == "string"
             or option_dict_content["type"] == "int"
         ):
-            raise ValueError(f"Invalid option: {option_name} in: {arg}")
+            raise SkewerValueError(f"Invalid option: {option_name} in: {arg}")
         else:
-            raise ValueError("FATAL")
+            raise SkewerValueError("FATAL")
         values[option_key] = option_value
     if match.group(2):
         option_value = None
@@ -76,7 +77,7 @@ def parse_short_option(
         try:
             option_dict_content = option_dict["short"][option_name]
         except KeyError:
-            raise ValueError(f"Invalid option: {arg}")
+            raise SkewerValueError(f"Invalid option: {arg}")
         option_key = option_dict_content["key"]
         if option_dict_content["type"] == "string":
             if match.group(4):
@@ -85,22 +86,22 @@ def parse_short_option(
                 try:
                     option_value = args.pop(0)
                 except ValueError:
-                    raise ValueError(f"Invalid option: {arg}")
+                    raise SkewerValueError(f"Invalid option: {arg}")
         elif option_dict_content["type"] == "int":
             if match.group(4):
                 try:
                     option_value = int(match.group(5), 10)
                 except ValueError:
-                    raise ValueError(f"Invalid option: {arg}")
+                    raise SkewerValueError(f"Invalid option: {arg}")
             else:
                 try:
                     value_string = args.pop(0)
                 except ValueError:
-                    raise ValueError(f"Invalid option: {arg}")
+                    raise SkewerValueError(f"Invalid option: {arg}")
                 try:
                     option_value = int(value_string, 10)
                 except ValueError:
-                    raise ValueError(f"Invalid option: {arg} {value_string}")
+                    raise SkewerValueError(f"Invalid option: {arg} {value_string}")
         elif option_dict_content["type"] == "bool":
             if match.group(4):
                 option_value = not match.group(5).lower in [
@@ -114,7 +115,7 @@ def parse_short_option(
             else:
                 option_value = True
         else:
-            raise ValueError("FATAL")
+            raise SkewerValueError("FATAL")
 
         values[option_key] = option_value
 
@@ -127,19 +128,19 @@ def parse_long_option(
 ) -> None:
     match = re.match(r"^--([a-z][a-z-]+)(=(.*))?", arg)
     if not match:
-        raise ValueError(f"Invalid option: {arg}")
+        raise SkewerValueError(f"Invalid option: {arg}")
     name = match.group(1)
     try:
         option_dict_content = option_dict["long"][name]
     except KeyError:
-        raise ValueError(f"Invalid option: {arg}")
+        raise SkewerValueError(f"Invalid option: {arg}")
     option_key = option_dict_content["key"]
     if option_dict_content["type"] == "string":
         if match.group(2) is None:
             try:
                 option_value = args.pop(0)
             except ValueError:
-                raise ValueError(f"Invalid option: {arg}")
+                raise SkewerValueError(f"Invalid option: {arg}")
         else:
             option_value = match.group(3)
     elif option_dict_content["type"] == "int":
@@ -147,17 +148,17 @@ def parse_long_option(
             try:
                 value_string = args.pop(0)
             except ValueError:
-                raise ValueError(f"Invalid option: {arg}")
+                raise SkewerValueError(f"Invalid option: {arg}")
             try:
                 option_value = int(value_string, 10)
             except ValueError:
-                raise ValueError(f"Invalid value: {arg} {value_string}")
+                raise SkewerValueError(f"Invalid value: {arg} {value_string}")
         else:
             value_string = match.group(3)
             try:
                 option_value = int(value_string, 10)
             except ValueError:
-                raise ValueError(f"Invalid value: {arg}")
+                raise SkewerValueError(f"Invalid value: {arg}")
     elif option_dict_content["type"] == "bool":
         if match.group(2) is None:
             option_value = True
@@ -169,7 +170,7 @@ def parse_long_option(
         else:
             option_value = match.group(3)
     else:
-        raise ValueError("FATAL")
+        raise SkewerValueError("FATAL")
 
     values[option_key] = option_value
 

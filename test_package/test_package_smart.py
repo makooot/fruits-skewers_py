@@ -5,6 +5,7 @@ from fruits_skewers.skewer import parser
 from fruits_skewers.types import SkewerCommandDetail
 from fruits_skewers.types import SkewerShowHelpException
 from fruits_skewers.types import SkewerShowVersionException
+from fruits_skewers.types import SkewerValueError
 
 
 class TestPackageSmart(unittest.TestCase):
@@ -246,19 +247,19 @@ class TestPackageSmart(unittest.TestCase):
     def test_short_invalid_name(self):
         args = ["-#"]
         command_detail: SkewerCommandDetail = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_short_undefined_name(self):
         args = ["-q"]
         command_detail: SkewerCommandDetail = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_long_invalid_name(self):
         args = ["--###-###"]
         command_detail: SkewerCommandDetail = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_invlid_int_1(self):
@@ -268,7 +269,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_invlid_int_2(self):
@@ -278,7 +279,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_invlid_int_3(self):
@@ -288,7 +289,7 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_invlid_int_4(self):
@@ -298,17 +299,17 @@ class TestPackageSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser(command_detail, args)
 
     def test_invalid_name_1(self):
         args = ["--verbose"]
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser({}, args)
 
     def test_invalid_name_2(self):
         args = ["-v"]
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser({}, args)
 
     def test_short_showhelp_exception(self):
