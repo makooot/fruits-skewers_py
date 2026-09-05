@@ -1,4 +1,4 @@
-from typing import TypedDict, TypeAlias
+from typing import TypedDict
 
 
 class C:
@@ -18,7 +18,7 @@ class SkewerCommandDetail(TypedDict, total=False):
     version_option: list[str]
 
 
-SkewerParserResult: TypeAlias = dict[str, str | int | bool | None | list[str]]
+type SkewerParserResult = dict[str, str | int | bool | None | list[str]]
 
 
 class SkewerShowHelpException(Exception):

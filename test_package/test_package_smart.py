@@ -2,10 +2,12 @@ import typing
 import unittest
 
 from fruits_skewers.skewer import skewer_parser
-from fruits_skewers.types import SkewerCommandDetail
-from fruits_skewers.types import SkewerShowHelpException
-from fruits_skewers.types import SkewerShowVersionException
-from fruits_skewers.types import SkewerValueError
+from fruits_skewers.types import (
+    SkewerCommandDetail,
+    SkewerShowHelpException,
+    SkewerShowVersionException,
+    SkewerValueError,
+)
 
 
 class TestPackageSmart(unittest.TestCase):
