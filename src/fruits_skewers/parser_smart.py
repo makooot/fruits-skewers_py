@@ -185,9 +185,9 @@ def parser(
         if arg == "--":
             break
         elif arg in ["-h", "--help"]:
-            raise types.ShowHelpException()
+            raise types.SkewerShowHelpException()
         elif arg in ["--version"]:
-            raise types.ShowVersionException()
+            raise types.SkewerShowVersionException()
         elif arg.startswith("--"):
             parse_long_option(arg, args, option_names, values)
         elif arg.startswith("-"):

@@ -21,9 +21,9 @@ class SkewerCommandDetail(TypedDict, total=False):
 SkewerParserResult: TypeAlias = dict[str, str | int | bool | None | list[str]]
 
 
-class ShowHelpException(Exception):
+class SkewerShowHelpException(Exception):
     pass
 
 
-class ShowVersionException(Exception):
+class SkewerShowVersionException(Exception):
     pass

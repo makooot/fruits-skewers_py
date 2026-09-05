@@ -311,19 +311,19 @@ class TestParserSmart(unittest.TestCase):
     def test_short_showhelp_exception(self):
         args = ["-h"]
         command_detail: parser_smart.types.SkewerCommandDetail = {}
-        with self.assertRaises(parser_smart.types.ShowHelpException):
+        with self.assertRaises(parser_smart.types.SkewerShowHelpException):
             parser_smart.parser(command_detail, args)
 
     def test_long_showhelp_exception(self):
         args = ["--help"]
         command_detail: parser_smart.types.SkewerCommandDetail = {}
-        with self.assertRaises(parser_smart.types.ShowHelpException):
+        with self.assertRaises(parser_smart.types.SkewerShowHelpException):
             parser_smart.parser(command_detail, args)
 
     def test_long_showversion_exception(self):
         args = ["--version"]
         command_detail: parser_smart.types.SkewerCommandDetail = {}
-        with self.assertRaises(parser_smart.types.ShowVersionException):
+        with self.assertRaises(parser_smart.types.SkewerShowVersionException):
             parser_smart.parser(command_detail, args)
 
     def test_parse_short(self):

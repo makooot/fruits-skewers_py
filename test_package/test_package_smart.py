@@ -311,17 +311,17 @@ class TestPackageSmart(unittest.TestCase):
     def test_short_showhelp_exception(self):
         args = ["-h"]
         command_detail: skewer.types.SkewerCommandDetail = {}
-        with self.assertRaises(skewer.types.ShowHelpException):
+        with self.assertRaises(skewer.types.SkewerShowHelpException):
             skewer.parser(command_detail, args)
 
     def test_long_showhelp_exception(self):
         args = ["--help"]
         command_detail: skewer.types.SkewerCommandDetail = {}
-        with self.assertRaises(skewer.types.ShowHelpException):
+        with self.assertRaises(skewer.types.SkewerShowHelpException):
             skewer.parser(command_detail, args)
 
     def test_long_showversion_exception(self):
         args = ["--version"]
         command_detail: skewer.types.SkewerCommandDetail = {}
-        with self.assertRaises(skewer.types.ShowVersionException):
+        with self.assertRaises(skewer.types.SkewerShowVersionException):
             skewer.parser(command_detail, args)
