@@ -2,6 +2,7 @@ import re
 import typing
 
 from . import types
+from .types import SkewerParserResult
 
 default_command_detail: types.SkewerCommandDetail = {
     "arguments_key": "ARGV",
@@ -48,7 +49,7 @@ def parse_short_option(
     arg: str,
     args: list[str],
     option_dict: OptionNames,
-    values: dict[str, str | int | bool | None | list[str]],
+    values: SkewerParserResult,
 ) -> None:
     match = re.match(r"^-([a-zA-Z]*)(([a-zA-Z])(=(.*))?)", arg)
     if not match:
@@ -122,7 +123,7 @@ def parse_long_option(
     arg: str,
     args: list[str],
     option_dict: OptionNames,
-    values: dict[str, str | int | bool | None | list[str]],
+    values: SkewerParserResult,
 ) -> None:
     match = re.match(r"^--([a-z][a-z-]+)(=(.*))?", arg)
     if not match:
@@ -175,8 +176,8 @@ def parse_long_option(
 
 def parser(
     command_detail: types.SkewerCommandDetail, args_raw: list[str]
-) -> dict[str, str | int | bool | None | list[str]]:
-    values: dict[str, str | int | bool | None | list[str]] = {}
+) -> types.SkewerParserResult:
+    values: types.SkewerParserResult = {}
     option_names = get_option_names(command_detail)
     args = args_raw[:]
     while args:
