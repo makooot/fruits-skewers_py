@@ -5,7 +5,7 @@ Command line argument parser
 ## Installation
 
 ```bash
-pip install fruits-kewers
+pip install fruits-skewers
 ```
 
 ## Quick Start
