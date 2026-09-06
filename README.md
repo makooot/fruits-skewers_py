@@ -1,4 +1,4 @@
-# fruits-kewers
+# fruits-skewers
 
 Command line argument parser
 
