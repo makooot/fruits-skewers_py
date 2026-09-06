@@ -1,6 +1,6 @@
 [project]
 name = "fruits-skewers"
-version = "0.4.1"
+version = "0.4.2"
 description = "command line argument parser"
 readme = "README.md"
 license = "MIT"
