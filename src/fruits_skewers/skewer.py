@@ -2,8 +2,8 @@ import sys
 
 from . import parser_smart
 from .types import (
-    SkewerParserResult,
     SkewerCommandDetail,
+    SkewerParserResult,
 )
 
 
