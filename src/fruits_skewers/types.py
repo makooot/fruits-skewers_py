@@ -28,5 +28,6 @@ class SkewerShowHelpException(Exception):
 class SkewerShowVersionException(Exception):
     pass
 
+
 class SkewerValueError(ValueError):
     pass
