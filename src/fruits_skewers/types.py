@@ -1,10 +1,6 @@
 from typing import TypedDict
 
 
-class C:
-    pass
-
-
 class SkewerOption(TypedDict, total=False):
     key: str
     type: str
