@@ -4,7 +4,7 @@ from nox_uv import session
 nox.options.default_venv_backend = "uv"
 
 
-@session(python=["3.14"])
+@session(python=["3.12", "3.13", "3.14"])
 def tests(s: nox.Session) -> None:
     """session for testing the module"""
 
@@ -12,7 +12,7 @@ def tests(s: nox.Session) -> None:
     s.run("python", "-m", "unittest", "discover", "-s", "test")
 
 
-@session(python=["3.14"])
+@session(python=["3.12", "3.13", "3.14"])
 def tests_package(s: nox.Session) -> None:
     """session for testing the package"""
 
