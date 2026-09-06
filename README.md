@@ -1,16 +1,11 @@
 # fruits-kewers
 
-> ⚠️ **Disclaimer: This is a learning-oriented project.**
-> This repository is built strictly for personal learning and practicing Python library development. It is **not actively maintained for public production use**. Bug reports, feature requests, or Pull Requests may not be reviewed or addressed. Feel free to fork the repository for your own use under the MIT License.
-
 Command line argument parser
 
 ## Installation
 
-You can install this library locally (or from GitHub) using `pip`:
-
 ```bash
-pip install git+https://github.com/makooot/fruits-skewers_py.git@main
+pip install fruits-kewers
 ```
 
 ## Quick Start
@@ -63,7 +58,8 @@ for i, arg in enumerate(argv):
 
 ## Contributing
 
-Please refer to CONTRIBUTING.md for details on how this repository handles issues, pull requests, and forks.
+Please refer to CONTRIBUTING.md for details on how this repository handles
+issues, pull requests, and forks.
 
 ## License
 
