@@ -70,6 +70,12 @@ tasks:
     cmds:
       - uv run nox -s tests_package
 
+  publish:
+    desc: publish the package
+    prompt: "Publish the package.\n  Are you sure?"
+    cmds:
+      - uv publish
+
   update-project:
     desc: update this project
     cmds:
