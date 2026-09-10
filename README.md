@@ -30,7 +30,7 @@ command_detail: SkewerCommandDetail = {
     ]
 }
 try:
-    result = skewer_parser(command_detail)
+    opts, unnamed = skewer_parser(command_detail)
 except SkewerShowHelpException:
     print("usage: COMMAND OPTIONS")
     exit(0)
@@ -41,18 +41,17 @@ except SkewerValueError as e:
     print(e)
     exit(1)
 
-if result.get("verbose", False):
-    if "host" in result:
-        print(f"Host: {result.get('host')}")
+if opts.get("verbose", False):
+    if "host" in opts:
+        print(f"Host: {opts.get('host')}")
     else:
         print("Host: (default) ")
-    if "port" in result:
-        print(f"Port: {result.get('port')}")
+    if "port" in opts:
+        print(f"Port: {opts.get('port')}")
     else:
         print("Port: (default) ")
-argv = result.get("ARGV")
-print(f"ARGV: {len(argv)}")
-for i, arg in enumerate(argv):
+print(f"ARGV: {len(unnamed)}")
+for i, arg in enumerate(unnamed):
     print(f"  [{i}]: {arg}")
 ```
 

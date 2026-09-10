@@ -10,8 +10,7 @@ from .types import (
 )
 
 default_command_detail: SkewerCommandDetail = {
-    "command": {
-        "arguments_key": "ARGV",
+    "cmdline": {
         "help_option": ["-h", "--help"],
         "version_option": ["--version"],
     },
@@ -19,25 +18,18 @@ default_command_detail: SkewerCommandDetail = {
 }
 
 
-def get_arguments_key(command_detail: SkewerCommandDetail) -> str:
-    try:
-        return command_detail["command"]["arguments_key"]
-    except KeyError:
-        return default_command_detail["command"]["arguments_key"]
-
-
 def get_help_option(command_detail: SkewerCommandDetail) -> list[str]:
     try:
-        return command_detail["command"]["help_option"]
+        return command_detail["cmdline"]["help_option"]
     except KeyError:
-        return default_command_detail["command"]["help_option"]
+        return default_command_detail["cmdline"]["help_option"]
 
 
 def get_version_option(command_detail: SkewerCommandDetail) -> list[str]:
     try:
-        return command_detail["command"]["version_option"]
+        return command_detail["cmdline"]["version_option"]
     except KeyError:
-        return default_command_detail["command"]["version_option"]
+        return default_command_detail["cmdline"]["version_option"]
 
 
 class OptionDictContent(typing.TypedDict, total=False):
@@ -197,7 +189,7 @@ def parse_long_option(
 
 def parser(
     command_detail: SkewerCommandDetail, args_raw: list[str]
-) -> SkewerParserResult:
+) -> tuple[SkewerParserResult, list[str]]:
     values: SkewerParserResult = {}
     help_option = get_help_option(command_detail)
     version_option = get_version_option(command_detail)
@@ -218,5 +210,4 @@ def parser(
         else:
             args.insert(0, arg)
             break
-    values[get_arguments_key(command_detail)] = args
-    return values
+    return values, args

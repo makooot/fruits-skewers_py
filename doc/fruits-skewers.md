@@ -7,7 +7,7 @@ Arguments:
 - command_detail -- Parser settings.
 - args -- List of strings to be parsed.
 
-Return value is dict object stored results.
+Return value is a tuple of results.
 
 Exception:
 - SkewerShowHelpException -- Need to display the application help.
@@ -20,8 +20,7 @@ Parser settings.
 
 ```python
 {
-    "command":{
-        "arguments_key": "ARGS"
+    "cmdline":{
         "help_option": ["-h", "--help"]
         "version_option": ["--version"]
     },
@@ -35,7 +34,7 @@ Parser settings.
 }
 ```
 
-### command
+### cmdline
 **arguments_key** is keyword to refer return value excluding options(start with "-")
 from args.
 (default: "ARGS")
@@ -65,7 +64,10 @@ List of strings to be parsed.
 
 ## Return value
 
-Return value is dict object stored results.
+Return value is a tuple of the following:
+
+- dict object stored named option
+- list object storing remaining arguments
 
 ## SkewerShowHelpException -- exception
 
