@@ -20,7 +20,11 @@ Parser settings.
 
 ```python
 {
-    "arguments_key": "ARGS"
+    "command":{
+        "arguments_key": "ARGS"
+        "help_option": ["-h", "--help"]
+        "version_option": ["--version"]
+    },
     "options": [
         {
             "key": "foo"
@@ -28,15 +32,22 @@ Parser settings.
             "cmd": ["-f", "--foo"]
         }
     ]
-    "help_option": ["-h", "--help"]
-    "version_option": ["--version"]
 }
 ```
 
-### arguments_key
-
-keyword to refer return value excluding options(start with "-") from args.
+### command
+**arguments_key** is keyword to refer return value excluding options(start with "-")
+from args.
 (default: "ARGS")
+
+**help_option** is command-line options to display help.  If One of thees is
+specified, throwSkewerShowHelpException.  The caller display the help, if it
+catchesthe exception.
+(default: ["-h", "--help"])
+
+**version_option** is command-line options to display version. If One of thees
+is specified, throw SkewerShowversionException.
+(default: ["--version"])
 
 ### options
 (default: [])
@@ -47,17 +58,6 @@ keyword to refer return value excluding options(start with "-") from args.
 (default: "string")
 
 **cmd** is list of command-line option.
-
-### help_option
-Command-line options to display help.  If One of thees is specified, throw
-SkewerShowHelpException.  The caller display the help, if it catches
-the exception.
-(default: ["-h", "--help"])
-
-### version_option
-Command-line options to display version. If One of thees is specified, throw
-SkewerShowversionException.
-(default: ["--version"])
 
 ## args -- argument
 List of strings to be parsed.

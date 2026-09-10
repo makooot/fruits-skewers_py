@@ -1,6 +1,12 @@
 from typing import TypedDict
 
 
+class SkewerCommand(TypedDict, total=False):
+    arguments_key: str
+    help_option: list[str]
+    version_option: list[str]
+
+
 class SkewerOption(TypedDict, total=False):
     key: str
     type: str
@@ -8,10 +14,8 @@ class SkewerOption(TypedDict, total=False):
 
 
 class SkewerCommandDetail(TypedDict, total=False):
-    arguments_key: str
+    command: SkewerCommand
     options: list[SkewerOption]
-    help_option: list[str]
-    version_option: list[str]
 
 
 type SkewerParserResult = dict[str, str | int | bool | None | list[str]]

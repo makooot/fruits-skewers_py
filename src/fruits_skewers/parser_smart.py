@@ -10,18 +10,34 @@ from .types import (
 )
 
 default_command_detail: SkewerCommandDetail = {
-    "arguments_key": "ARGV",
+    "command": {
+        "arguments_key": "ARGV",
+        "help_option": ["-h", "--help"],
+        "version_option": ["--version"],
+    },
     "options": [],
-    "help_option": ["--help"],
-    "version_option": ["-h", "--version"],
 }
 
 
 def get_arguments_key(command_detail: SkewerCommandDetail) -> str:
     try:
-        return command_detail["arguments_key"]
+        return command_detail["command"]["arguments_key"]
     except KeyError:
-        return default_command_detail["arguments_key"]
+        return default_command_detail["command"]["arguments_key"]
+
+
+def get_help_option(command_detail: SkewerCommandDetail) -> list[str]:
+    try:
+        return command_detail["command"]["help_option"]
+    except KeyError:
+        return default_command_detail["command"]["help_option"]
+
+
+def get_version_option(command_detail: SkewerCommandDetail) -> list[str]:
+    try:
+        return command_detail["command"]["version_option"]
+    except KeyError:
+        return default_command_detail["command"]["version_option"]
 
 
 class OptionDictContent(typing.TypedDict, total=False):
@@ -108,7 +124,7 @@ def parse_short_option(
                     raise SkewerValueError(f"Invalid option: {arg} {value_string}")
         elif option_dict_content["type"] == "bool":
             if match.group(4):
-                option_value = not match.group(5).lower in [
+                option_value = not match.group(5).lower() in [
                     "",
                     "false",
                     "f",
@@ -183,15 +199,17 @@ def parser(
     command_detail: SkewerCommandDetail, args_raw: list[str]
 ) -> SkewerParserResult:
     values: SkewerParserResult = {}
+    help_option = get_help_option(command_detail)
+    version_option = get_version_option(command_detail)
     option_names = get_option_names(command_detail)
     args = args_raw[:]
     while args:
         arg = args.pop(0)
         if arg == "--":
             break
-        elif arg in ["-h", "--help"]:
+        elif arg in help_option:
             raise SkewerShowHelpException()
-        elif arg in ["--version"]:
+        elif arg in version_option:
             raise SkewerShowVersionException()
         elif arg.startswith("--"):
             parse_long_option(arg, args, option_names, values)
