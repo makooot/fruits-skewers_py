@@ -453,4 +453,3 @@ class TestParserSmart(unittest.TestCase):
         }
         with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
-
