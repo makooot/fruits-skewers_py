@@ -2,6 +2,7 @@ import typing
 import unittest
 
 from fruits_skewers import parser_smart
+from fruits_skewers.types import SkewerValueError
 
 
 class TestParserSmart(unittest.TestCase):
@@ -131,6 +132,98 @@ class TestParserSmart(unittest.TestCase):
         self.assertTrue(opts["b"])
         self.assertEqual(opts["n"], 1234)
 
+    def test_short_chain_bbi_invalid(self):
+        args = ["-abn=x"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-a"]},
+                {"key": "b", "type": "bool", "cmd": ["-b"]},
+                {"key": "n", "type": "int", "cmd": ["-n"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_chain_bib(self):
+        args = ["-anb"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-a"]},
+                {"key": "b", "type": "bool", "cmd": ["-b"]},
+                {"key": "n", "type": "int", "cmd": ["-n"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_chain_bsb(self):
+        args = ["-asb"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-a"]},
+                {"key": "b", "type": "bool", "cmd": ["-b"]},
+                {"key": "s", "type": "string", "cmd": ["-s"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_chain_invalid_1(self):
+        args = ["-aX"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-a"]},
+                {"key": "b", "type": "bool", "cmd": ["-b"]},
+                {"key": "s", "type": "string", "cmd": ["-s"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_chain_invalid_2(self):
+        args = ["-Xa"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-a"]},
+                {"key": "b", "type": "bool", "cmd": ["-b"]},
+                {"key": "s", "type": "string", "cmd": ["-s"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_chain_invalid_3(self):
+        args = ["-Xa"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-a"]},
+                {"key": "b", "type": "bool", "cmd": ["-b"]},
+                {"key": "s", "type": "string", "cmd": ["-s"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_no_int(self):
+        args = ["-n"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "n", "type": "int", "cmd": ["-n"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_short_no_str(self):
+        args = ["-s"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "s", "type": "string", "cmd": ["-s"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
     def test_long_bool(self):
         args = ["--allow"]
         command_detail: parser_smart.SkewerCommandDetail = {
@@ -243,19 +336,19 @@ class TestParserSmart(unittest.TestCase):
     def test_short_invalid_name(self):
         args = ["-#"]
         command_detail: parser_smart.SkewerCommandDetail = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_short_undefined_name(self):
         args = ["-q"]
         command_detail: parser_smart.SkewerCommandDetail = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_long_invalid_name(self):
         args = ["--###-###"]
         command_detail: parser_smart.SkewerCommandDetail = {}
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_invlid_int_1(self):
@@ -265,7 +358,7 @@ class TestParserSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_invlid_int_2(self):
@@ -275,7 +368,7 @@ class TestParserSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_invlid_int_3(self):
@@ -285,7 +378,7 @@ class TestParserSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_invlid_int_4(self):
@@ -295,17 +388,17 @@ class TestParserSmart(unittest.TestCase):
                 {"key": "port", "type": "int", "cmd": ["--port"]},
             ]
         }
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
 
     def test_invalid_name_1(self):
         args = ["--verbose"]
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser({}, args)
 
     def test_invalid_name_2(self):
         args = ["-v"]
-        with self.assertRaises(ValueError):
+        with self.assertRaises(SkewerValueError):
             parser_smart.parser({}, args)
 
     def test_short_showhelp_exception(self):
@@ -340,3 +433,24 @@ class TestParserSmart(unittest.TestCase):
         self.assertEqual(args, ["--", "foo"])
         self.assertTrue(values["a"])
         self.assertEqual(values["p"], 8080)
+
+    def test_long_no_int(self):
+        args = ["--num"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "num", "type": "int", "cmd": ["--num"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
+    def test_long_no_str(self):
+        args = ["--str"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "str", "type": "string", "cmd": ["--str"]},
+            ]
+        }
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, args)
+
