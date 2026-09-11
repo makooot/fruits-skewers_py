@@ -97,7 +97,7 @@ def parse_short_option(
             else:
                 try:
                     option_value = args.pop(0)
-                except ValueError:
+                except IndexError:
                     raise SkewerValueError(f"Invalid option: {arg}")
         elif option_dict_content["type"] == "int":
             if match.group(4):
@@ -108,7 +108,7 @@ def parse_short_option(
             else:
                 try:
                     value_string = args.pop(0)
-                except ValueError:
+                except IndexError:
                     raise SkewerValueError(f"Invalid option: {arg}")
                 try:
                     option_value = int(value_string, 10)
@@ -151,7 +151,7 @@ def parse_long_option(
         if match.group(2) is None:
             try:
                 option_value = args.pop(0)
-            except ValueError:
+            except IndexError:
                 raise SkewerValueError(f"Invalid option: {arg}")
         else:
             option_value = match.group(3)
@@ -159,7 +159,7 @@ def parse_long_option(
         if match.group(2) is None:
             try:
                 value_string = args.pop(0)
-            except ValueError:
+            except IndexError:
                 raise SkewerValueError(f"Invalid option: {arg}")
             try:
                 option_value = int(value_string, 10)
