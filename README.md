@@ -13,16 +13,10 @@ pip install fruits-skewers
 Here is a simple example of how to use the library:
 
 ```python
-from fruits_skewers.skewer import skewer_parser
-from fruits_skewers.types import (
-    SkewerCommandDetail,
-    SkewerShowHelpException,
-    SkewerShowVersionException,
-    SkewerValueError,
-)
+import fruits_skewers
 
 
-command_detail: SkewerCommandDetail = {
+command_detail: fruits_skewers.SkewerCommandDetail = {
     "options": [
         {"key": "verbose", "type": "bool", "cmd": ["-v", "--verbose"]},
         {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
@@ -30,14 +24,14 @@ command_detail: SkewerCommandDetail = {
     ]
 }
 try:
-    opts, unnamed = skewer_parser(command_detail)
-except SkewerShowHelpException:
+    opts, unnamed = fruits_skewers.skewer_parser(command_detail)
+except fruits_skewers.SkewerShowHelpException:
     print("usage: COMMAND OPTIONS")
     exit(0)
-except SkewerShowVersionException:
+except fruits_skewers.SkewerShowVersionException:
     print("COMMAND 0.0.0")
     exit(0)
-except SkewerValueError as e:
+except fruits_skewers.SkewerValueError as e:
     print(e)
     exit(1)
 
