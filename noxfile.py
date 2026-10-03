@@ -1,3 +1,5 @@
+import tomllib
+from pathlib import Path
 import nox
 from nox_uv import session
 
@@ -16,8 +18,15 @@ def tests(s: nox.Session) -> None:
 def tests_package(s: nox.Session) -> None:
     """session for testing the package"""
 
+    # get name and version number
+    pyproject_path = Path(__file__).parent / "pyproject.toml"
+    with open(pyproject_path, "rb") as f:
+        data = tomllib.load(f)
+    project_name = data["project"]["name"].lower().translate(str.maketrans("-.", "__"))
+    project_version = data["project"]["version"]
+
     # install the package
-    s.install("./dist/fruits_skewers-0.7.0-py3-none-any.whl")
+    s.install(f"./dist/{project_name}-{project_version}-py3-none-any.whl")
 
     # run the tests
     s.run("python", "-m", "unittest", "discover", "-s", "test_package")
