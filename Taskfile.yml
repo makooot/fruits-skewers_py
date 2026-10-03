@@ -76,6 +76,36 @@ tasks:
     cmds:
       - uv publish
 
+  update-patch-version:
+    desc: update the patch version of this project
+    vars:
+      NEWVERSION:
+        sh: uv version --bump patch --dry-run
+    prompt:
+      - "{{.NEWVERSION}}\n  Are you sure?"
+    cmds:
+      - uv version --bump patch
+
+  update-minor-version:
+    desc: update the minor version of this project
+    vars:
+      NEWVERSION:
+        sh: uv version --bump minor --dry-run
+    prompt:
+      - "{{.NEWVERSION}}\n  Are you sure?"
+    cmds:
+      - uv version --bump minor
+
+  update-major-version:
+    desc: update the major version of this project
+    vars:
+      NEWVERSION:
+        sh: uv version --bump major --dry-run
+    prompt:
+      - "{{.NEWVERSION}}\n  Are you sure?"
+    cmds:
+      - uv version --bump major
+
   update-project:
     desc: update this project
     cmds:
