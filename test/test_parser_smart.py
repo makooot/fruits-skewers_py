@@ -453,3 +453,323 @@ class TestParserSmart(unittest.TestCase):
         }
         with self.assertRaises(SkewerValueError):
             parser_smart.parser(command_detail, args)
+
+    def test_short_bool_false(self):
+        args = ["-b=false"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_off(self):
+        args = ["-b=off"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_no(self):
+        args = ["-b=no"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_f(self):
+        args = ["-b=f"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_0(self):
+        args = ["-b=0"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_empty(self):
+        args = ["-b="]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_true(self):
+        args = ["-b=true"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_on(self):
+        args = ["-b=on"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_yes(self):
+        args = ["-b=yes"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_t(self):
+        args = ["-b=t"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_1(self):
+        args = ["-b=1"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_anystring(self):
+        args = ["-b=anystring"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_long_bool_false(self):
+        args = ["--bool=false"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_off(self):
+        args = ["--bool=off"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_no(self):
+        args = ["--bool=no"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_f(self):
+        args = ["--bool=f"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_0(self):
+        args = ["--bool=0"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_empty(self):
+        args = ["--bool="]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_true(self):
+        args = ["--bool=true"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_on(self):
+        args = ["--bool=on"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_yes(self):
+        args = ["--bool=yes"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_t(self):
+        args = ["--bool=t"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_1(self):
+        args = ["--bool=1"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_anystring(self):
+        args = ["--bool=anystring"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_short_bool_FALSE(self):
+        args = ["-b=FALSE"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_OFF(self):
+        args = ["-b=OFF"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_NO(self):
+        args = ["-b=NO"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_F(self):
+        args = ["-b=F"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["b"])
+
+    def test_short_bool_TRUE(self):
+        args = ["-b=TRUE"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_ON(self):
+        args = ["-b=ON"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_YES(self):
+        args = ["-b=YES"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_short_bool_T(self):
+        args = ["-b=T"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["b"])
+
+    def test_long_bool_FALSE(self):
+        args = ["--bool=FALSE"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_OFF(self):
+        args = ["--bool=OFF"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_NO(self):
+        args = ["--bool=NO"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_F(self):
+        args = ["--bool=F"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertFalse(opts["bool"])
+
+    def test_long_bool_TRUE(self):
+        args = ["--bool=TRUE"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_ON(self):
+        args = ["--bool=ON"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_YES(self):
+        args = ["--bool=YES"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])
+
+    def test_long_bool_T(self):
+        args = ["--bool=T"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
+        }
+        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["bool"])

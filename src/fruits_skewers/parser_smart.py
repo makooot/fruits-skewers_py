@@ -175,7 +175,14 @@ def parse_long_option(
         if match.group(2) is None:
             option_value = True
         else:
-            option_value = not match.group(3).lower in ["", "false", "f", "off", "no"]
+            option_value = not match.group(3).lower() in [
+                "",
+                "false",
+                "f",
+                "off",
+                "no",
+                "0",
+            ]
     elif option_dict_content["type"] == "nullable_string":
         if match.group(2) is None:
             option_value = None
