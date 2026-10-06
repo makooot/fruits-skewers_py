@@ -13,6 +13,8 @@ pip install fruits-skewers
 Here is a simple example of how to use the library:
 
 ```python
+import sys
+
 import fruits_skewers
 
 
@@ -27,13 +29,13 @@ try:
     opts, unnamed = fruits_skewers.skewer_parser(command_detail)
 except fruits_skewers.SkewerShowHelpException:
     print("usage: COMMAND OPTIONS")
-    exit(0)
+    sys.exit(0)
 except fruits_skewers.SkewerShowVersionException:
     print("COMMAND 0.0.0")
-    exit(0)
+    sys.exit(0)
 except fruits_skewers.SkewerValueError as e:
     print(e)
-    exit(1)
+    sys.exit(1)
 
 if opts.get("verbose", False):
     if "host" in opts:
