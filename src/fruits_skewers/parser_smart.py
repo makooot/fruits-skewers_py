@@ -1,6 +1,7 @@
 import re
 import typing
 
+from .helper import strtobool
 from .types import (
     SkewerCommandDetail,
     SkewerParserResult,
@@ -116,14 +117,7 @@ def parse_short_option(
                     raise SkewerValueError(f"Invalid option: {arg} {value_string}")
         elif option_dict_content["type"] == "bool":
             if match.group(4):
-                option_value = not match.group(5).lower() in [
-                    "",
-                    "false",
-                    "f",
-                    "off",
-                    "no",
-                    "0",
-                ]
+                option_value = strtobool(match.group(5))
             else:
                 option_value = True
         else:
@@ -175,14 +169,7 @@ def parse_long_option(
         if match.group(2) is None:
             option_value = True
         else:
-            option_value = not match.group(3).lower() in [
-                "",
-                "false",
-                "f",
-                "off",
-                "no",
-                "0",
-            ]
+            option_value = strtobool(match.group(3))
     elif option_dict_content["type"] == "nullable_string":
         if match.group(2) is None:
             option_value = None

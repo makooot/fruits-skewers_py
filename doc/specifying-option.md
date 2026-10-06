@@ -23,7 +23,7 @@ Integer type needs value.  Specify the value in decimal.
 
 Boolean type’s value is optional.
 The option without value is `True`.
-The following is `True`: `true`, `t`, `on`, `yes`, `1`.
-The following is `False`: `false`, `f`, `off`, `no`, `0`, Empty string.
+The following is `True`: `true`, `t`, `on`, `yes`, `y`, `1`.
+The following is `False`: `false`, `f`, `off`, `no`, `n`, `0`, Empty string.
 Any other string of one  or more characters is `True`.
 The value is case insensitive.
