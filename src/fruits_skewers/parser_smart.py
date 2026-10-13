@@ -4,6 +4,7 @@ import typing
 from .helper import strtobool
 from .types import (
     SkewerCommandDetail,
+    SkewerFatalError,
     SkewerParserResult,
     SkewerShowHelpException,
     SkewerShowVersionException,
@@ -21,16 +22,24 @@ default_command_detail: SkewerCommandDetail = {
 
 def get_help_option(command_detail: SkewerCommandDetail) -> list[str]:
     try:
-        return command_detail["cmdline"]["help_option"]
+        help_option = command_detail["cmdline"]["help_option"]
     except KeyError:
         return default_command_detail["cmdline"]["help_option"]
+    for option in help_option:
+        if not re.match(r"^(-[a-zA-Z]|--[a-z][a-z-]+)$", option):
+            raise SkewerFatalError(f"Invalid parser setting: help option: {option}")
+    return help_option
 
 
 def get_version_option(command_detail: SkewerCommandDetail) -> list[str]:
     try:
-        return command_detail["cmdline"]["version_option"]
+        version_option = command_detail["cmdline"]["version_option"]
     except KeyError:
         return default_command_detail["cmdline"]["version_option"]
+    for option in version_option:
+        if not re.match(r"^(-[a-zA-Z]|--[a-z][a-z-]+)$", option):
+            raise SkewerFatalError(f"Invalid parser setting: version option: {option}")
+    return version_option
 
 
 class OptionDictContent(typing.TypedDict, total=False):
@@ -48,14 +57,24 @@ def get_option_names(command_detail: SkewerCommandDetail) -> OptionNames:
     for option in command_detail.get("options", []):
         key = option["key"]
         type = option.get("type", "string")
+        if not type in ("string", "int", "bool"):
+            raise SkewerFatalError(f"Invalid parser setting: option type: {type}")
         for name in option.get("cmd", []):
-            match = re.match(r"^(--?)(.*)", name)
+            match = re.match(
+                r"^(-(?P<shortname>[a-zA-Z])|--(?P<longname>[a-z][a-z-]+))$", name
+            )
             if not match:
-                raise SkewerValueError("FATAL")
-            if match.group(1) == "--":
-                option_names["long"][match.group(2)] = {"type": type, "key": key}
-            elif match.group(1) == "-":
-                option_names["short"][match.group(2)] = {"type": type, "key": key}
+                raise SkewerFatalError(f"Invalid parser setting: option name: {name}")
+            if match["longname"]:
+                option_names["long"][match["longname"]] = {
+                    "type": type,
+                    "key": key,
+                }
+            elif match["shortname"]:
+                option_names["short"][match["shortname"]] = {
+                    "type": type,
+                    "key": key,
+                }
     return option_names
 
 
@@ -76,16 +95,10 @@ def parse_short_option(
         option_key = option_dict_content["key"]
         if option_dict_content["type"] == "bool":
             option_value = True
-        elif (
-            option_dict_content["type"] == "string"
-            or option_dict_content["type"] == "int"
-        ):
+        else:  # "string", "int"
             raise SkewerValueError(f"Invalid option: {option_name} in: {arg}")
-        else:
-            raise SkewerValueError("FATAL")
         values[option_key] = option_value
     if match.group(2):
-        option_value = None
         option_name = match.group(3)
         try:
             option_dict_content = option_dict["short"][option_name]
@@ -115,14 +128,11 @@ def parse_short_option(
                     option_value = int(value_string, 10)
                 except ValueError:
                     raise SkewerValueError(f"Invalid option: {arg} {value_string}")
-        elif option_dict_content["type"] == "bool":
+        else:  # "bool"
             if match.group(4):
                 option_value = strtobool(match.group(5))
             else:
                 option_value = True
-        else:
-            raise SkewerValueError("FATAL")
-
         values[option_key] = option_value
 
 
@@ -165,18 +175,11 @@ def parse_long_option(
                 option_value = int(value_string, 10)
             except ValueError:
                 raise SkewerValueError(f"Invalid value: {arg}")
-    elif option_dict_content["type"] == "bool":
+    else:  # "bool"
         if match.group(2) is None:
             option_value = True
         else:
             option_value = strtobool(match.group(3))
-    elif option_dict_content["type"] == "nullable_string":
-        if match.group(2) is None:
-            option_value = None
-        else:
-            option_value = match.group(3)
-    else:
-        raise SkewerValueError("FATAL")
 
     values[option_key] = option_value
 

@@ -2,7 +2,12 @@ import typing
 import unittest
 
 from fruits_skewers import parser_smart
-from fruits_skewers.types import SkewerValueError
+from fruits_skewers.types import (
+    SkewerFatalError,
+    SkewerShowHelpException,
+    SkewerShowVersionException,
+    SkewerValueError,
+)
 
 
 class TestParserSmart(unittest.TestCase):
@@ -773,3 +778,116 @@ class TestParserSmart(unittest.TestCase):
         }
         opts, _ = parser_smart.parser(command_detail, args)
         self.assertTrue(opts["bool"])
+
+    def test_fatal_error_invalid_option_name_in_setting(self):
+        args = ["-a"]
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "b", "type": "bool", "cmd": ["b"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, args)
+
+    def test_fatal_error_invalid_type_name_in_setting(self):
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "b", "type": "invalid_type", "cmd": ["-b", "--bool"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+
+    def test_help_option(self):
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["-aa"]}
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--a"]}
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--AAAA"]}
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
+        }
+        with self.assertRaises(SkewerShowHelpException):
+            parser_smart.parser(command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"])
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, ["-h"])
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, ["--help"])
+
+    def test_version_option(self):
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["-aa"]}
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["--a"]}
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["--AAAA"]}
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
+        }
+        with self.assertRaises(SkewerShowVersionException):
+            parser_smart.parser(command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"])
+        with self.assertRaises(SkewerValueError):
+            parser_smart.parser(command_detail, ["--version"])
+
+    def test_invalid_options(self):
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": [""]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["a"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-ab"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["--A"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["--0"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "invalidtype", "cmd": ["--abc"]},
+            ]
+        }
+        with self.assertRaises(SkewerFatalError):
+            parser_smart.parser(command_detail, [])

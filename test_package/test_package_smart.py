@@ -391,3 +391,122 @@ class TestPackageSmart(unittest.TestCase):
         self.assertFalse(opts["bool"])
         opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b="])
         self.assertFalse(opts["bool"])
+
+    def test_fatal_error_invalid_option_name_in_setting(self):
+        args = ["-a"]
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "b", "type": "bool", "cmd": ["b"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, args)
+
+    def test_fatal_error_invalid_type_name_in_setting(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "b", "type": "invalid_type", "cmd": ["-b", "--bool"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, ["-b"])
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, ["--bool"])
+
+    def test_help_option(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["-aa"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--a"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--AAAA"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerShowHelpException):
+            fruits_skewers.skewer_parser(
+                command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]
+            )
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-h"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--help"])
+
+    def test_version_option(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["-aa"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["--a"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["--AAAA"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"version_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerShowVersionException):
+            fruits_skewers.skewer_parser(
+                command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]
+            )
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--version"])
+
+    def test_invalid_options(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": [""]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["a"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["-ab"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["--A"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "bool", "cmd": ["--0"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "a", "type": "invalidtype", "cmd": ["--abc"]},
+            ]
+        }
+        with self.assertRaises(fruits_skewers.SkewerFatalError):
+            fruits_skewers.skewer_parser(command_detail, [])

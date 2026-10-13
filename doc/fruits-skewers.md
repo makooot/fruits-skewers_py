@@ -13,6 +13,7 @@ Exception:
 - SkewerShowHelpException -- Need to display the application help.
 - SkewerShowVersionException -- Need to display the application version.
 - SkewerValueError -- Error occurred on parsing.
+- SkewersFatalError -- Invalid parser settings.
 
 ## command_detail -- argument
 
@@ -35,10 +36,6 @@ Parser settings.
 ```
 
 ### cmdline
-**arguments_key** is keyword to refer return value excluding options(start with "-")
-from args.
-(default: "ARGS")
-
 **help_option** is command-line options to display help.  If One of thees is
 specified, throwSkewerShowHelpException.  The caller display the help, if it
 catchesthe exception.
@@ -84,3 +81,6 @@ skewer_parse() catches this exception, it displays the application version.
 
 Error occurred on parsing.
 
+## SkewersFatalError -- exception
+
+Invalid parser settings.
