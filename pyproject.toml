@@ -15,7 +15,7 @@ dependencies = []
 repository="https://github.com/makooot/fruits-skewers_py"
 
 [build-system]
-requires = ["uv_build>=0.12.4,<0.13.0"]
+requires = ["uv_build>=0.12.4"]
 build-backend = "uv_build"
 
 [dependency-groups]
