@@ -2,12 +2,6 @@ import typing
 import unittest
 
 from fruits_skewers import parser_smart
-from fruits_skewers.types import (
-    SkewerFatalError,
-    SkewerShowHelpException,
-    SkewerShowVersionException,
-    SkewerValueError,
-)
 
 
 class TestParserSmart(unittest.TestCase):
@@ -15,879 +9,499 @@ class TestParserSmart(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_empty(self):
-        args = []
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        _, unnamed = parser_smart.parser(command_detail, args)
+    def test_parser_no_options(self):
+        opts, unnamed = parser_smart.parser({}, [])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, [])
-
-    def test_args_1(self):
-        args = ["v1"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        _, unnamed = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser({}, ["v1"])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, ["v1"])
-
-    def test_args_2(self):
-        args = ["v1", "v2"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        _, unnamed = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser({}, ["v1", "v2"])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, ["v1", "v2"])
-
-    def test_args_3(self):
-        args = ["v1", "v2", "v3"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        _, unnamed = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser({}, ["v1", "v2", "v3"])
+        self.assertEqual(opts, {})
+        self.assertEqual(unnamed, ["v1", "v2", "v3"])
+        opts, unnamed = parser_smart.parser({}, ["--", "v1", "v2", "v3"])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, ["v1", "v2", "v3"])
 
-    def test_short_bool(self):
-        args = ["-b"]
+    def test_parser_invalid_option(self):
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser({}, ["-#"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser({}, ["--####"])
+
+    def test_parser_undefined_option(self):
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser({}, ["-X"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser({}, ["--xxxx"])
+
+    def test_parser_bool_option(self):
         command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b", "--bbb"]}]
         }
-        opts, _ = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser(command_detail, ["-b"])
         self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=true"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=TRUE"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=t"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=T"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=on"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=ON"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=yes"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=YES"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=Y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=1"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=anything"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=false"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=FALSE"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=F"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=off"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=OFF"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=no"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=NO"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=n"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=N"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=0"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b="])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=true"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=TRUE"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=t"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=T"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=on"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=ON"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=yes"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=YES"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=Y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=1"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=anything"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=false"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=FALSE"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=F"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=off"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=OFF"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=no"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=NO"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=n"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=N"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb=0"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb="])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
 
-    def test_short_string_connected(self):
-        args = ["-s=foo"]
+    def test_parser_string_option(self):
         command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "s", "type": "string", "cmd": ["-s"]}]
+            "options": [{"key": "s", "type": "string", "cmd": ["-s", "--sss"]}]
         }
-        opts, _ = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser(command_detail, ["-s=foo"])
         self.assertEqual(opts["s"], "foo")
-
-    def test_short_string_seperated(self):
-        args = ["-s", "foo"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "s", "type": "string", "cmd": ["-s"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-s", "foo"])
         self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--sss=foo"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--sss", "foo"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-s"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["--sss"])
 
-    def test_short_int_connected(self):
-        args = ["-n=123"]
+    def test_parser_int_option(self):
         command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "n", "type": "int", "cmd": ["-n"]}]
+            "options": [{"key": "n", "type": "int", "cmd": ["-n", "--nnn"]}]
         }
-        opts, _ = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser(command_detail, ["-n=123"])
         self.assertEqual(opts["n"], 123)
-
-    def test_short_int_seperated(self):
-        args = ["-n", "123"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "n", "type": "int", "cmd": ["-n"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-n", "123"])
         self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--nnn=123"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-n", "123"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-n"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-n=NaN"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-n", "NaN"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["--nnn"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["--nnn=NaN"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["--nnn", "NaN"])
 
-    def test_short_chain_bbb(self):
-        args = ["-abc"]
+    def test_parser_chaining_short_options(self):
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": ["-a"]},
                 {"key": "b", "type": "bool", "cmd": ["-b"]},
                 {"key": "c", "type": "bool", "cmd": ["-c"]},
+                {"key": "s", "type": "string", "cmd": ["-s"]},
+                {"key": "n", "type": "int", "cmd": ["-n"]},
             ]
         }
-        opts, _ = parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser(command_detail, ["-abc"])
         self.assertTrue(opts["a"])
         self.assertTrue(opts["b"])
         self.assertTrue(opts["c"])
-
-    def test_short_chain_bbs_empty(self):
-        args = ["-abs="]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "c", "type": "bool", "cmd": ["-c"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-abc=t"])
         self.assertTrue(opts["a"])
         self.assertTrue(opts["b"])
-        self.assertEqual(opts["s"], "")
-
-    def test_short_chain_bbs_any(self):
-        args = ["-abs=foo"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "c", "type": "bool", "cmd": ["-c"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertTrue(opts["c"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-abc=f"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertFalse(opts["c"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-abs=foo"])
         self.assertTrue(opts["a"])
         self.assertTrue(opts["b"])
         self.assertEqual(opts["s"], "foo")
-
-    def test_short_chain_bbi(self):
-        args = ["-abn=1234"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "n", "type": "int", "cmd": ["-n"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-abs", "foo"])
         self.assertTrue(opts["a"])
         self.assertTrue(opts["b"])
-        self.assertEqual(opts["n"], 1234)
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-asb"])
+        opts, unnamed = parser_smart.parser(command_detail, ["-abn=123"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-abn", "123"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-anb"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-aX"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-Xa"])
 
-    def test_short_chain_bbi_invalid(self):
-        args = ["-abn=x"]
+    def test_parser_same_option_multiple_times(self):
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "n", "type": "int", "cmd": ["-n"]},
+                {"key": "b", "type": "bool", "cmd": ["-b", "--bbb"]},
+                {"key": "n", "type": "int", "cmd": ["-n", "--nnn"]},
+                {"key": "s", "type": "string", "cmd": ["-s", "--sss"]},
             ]
         }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
+        opts, unnamed = parser_smart.parser(command_detail, ["-b", "-b"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=f", "-b"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b", "-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b=f", "-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-bb=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--bbb", "-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-b", "--bbb=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-n=1", "-n=2"])
+        self.assertEqual(opts["n"], 2)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--nnn=1", "-n=2"])
+        self.assertEqual(opts["n"], 2)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-n=1", "--nnn=2"])
+        self.assertEqual(opts["n"], 2)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-s=abc", "-s=xyz"])
+        self.assertEqual(opts["s"], "xyz")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["--sss=abc", "-s=xyz"])
+        self.assertEqual(opts["s"], "xyz")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-s=abc", "--sss=xyz"])
+        self.assertEqual(opts["s"], "xyz")
+        self.assertEqual(unnamed, [])
 
-    def test_short_chain_bib(self):
-        args = ["-anb"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "n", "type": "int", "cmd": ["-n"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_chain_bsb(self):
-        args = ["-asb"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_chain_invalid_1(self):
-        args = ["-aX"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_chain_invalid_2(self):
-        args = ["-Xa"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_chain_invalid_3(self):
-        args = ["-Xa"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_no_int(self):
-        args = ["-n"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "n", "type": "int", "cmd": ["-n"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_no_str(self):
-        args = ["-s"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_long_bool(self):
-        args = ["--allow"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "allow", "type": "bool", "cmd": ["--allow"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["allow"])
-
-    def test_long_string_connected_empty(self):
-        args = ["--prefix="]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["prefix"], "")
-
-    def test_long_string_connected_any(self):
-        args = ["--prefix=I:"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["prefix"], "I:")
-
-    def test_long_string_seperated(self):
-        args = ["--prefix", "I:"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["prefix"], "I:")
-
-    def test_long_int_connected(self):
-        args = ["--port=8080"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_long_int_seperated(self):
-        args = ["--port", "8080"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_both_def_short(self):
-        args = ["-p=8080"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_both_def_long(self):
-        args = ["--port=8080"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-            ]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_mix(self):
-        args = ["-ap", "8080", "--prefix=BEEF", "jkl", "mno"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "allow", "type": "bool", "cmd": ["-a", "--allow"]},
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-                {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
-            ]
-        }
-        opts, unnamed = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["allow"])
-        self.assertEqual(opts["prefix"], "BEEF")
-        self.assertEqual(opts["port"], 8080)
-        self.assertEqual(unnamed, ["jkl", "mno"])
-
-    def test_double_hyphen(self):
-        args = ["-ap", "8080", "--", "--prefix=BEEF", "jkl", "mno"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "allow", "type": "bool", "cmd": ["-a", "--allow"]},
-                {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-            ]
-        }
-        opts, unnamed = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["allow"])
-        self.assertEqual(opts["port"], 8080)
-        self.assertEqual(unnamed, ["--prefix=BEEF", "jkl", "mno"])
-
-    def test_short_invalid_name(self):
-        args = ["-#"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_undefined_name(self):
-        args = ["-q"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_long_invalid_name(self):
-        args = ["--###-###"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_invlid_int_1(self):
-        args = ["--port", "0A"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_invlid_int_2(self):
-        args = ["--port=0A"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_invlid_int_3(self):
-        args = ["-p", "0A"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_invlid_int_4(self):
-        args = ["-p=0A"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_invalid_name_1(self):
-        args = ["--verbose"]
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser({}, args)
-
-    def test_invalid_name_2(self):
-        args = ["-v"]
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser({}, args)
-
-    def test_short_showhelp_exception(self):
-        args = ["-h"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
+    def test_parser_help_option(self):
         with self.assertRaises(parser_smart.SkewerShowHelpException):
-            parser_smart.parser(command_detail, args)
-
-    def test_long_showhelp_exception(self):
-        args = ["--help"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
+            parser_smart.parser({}, ["-h"])
         with self.assertRaises(parser_smart.SkewerShowHelpException):
-            parser_smart.parser(command_detail, args)
+            parser_smart.parser({}, ["--help"])
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--cmd-help"]}
+        }
+        with self.assertRaises(parser_smart.SkewerShowHelpException):
+            parser_smart.parser(command_detail, ["--cmd-help"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["-h"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["--help"])
 
-    def test_long_showversion_exception(self):
-        args = ["--version"]
-        command_detail: parser_smart.SkewerCommandDetail = {}
+    def test_parser_version_option(self):
         with self.assertRaises(parser_smart.SkewerShowVersionException):
-            parser_smart.parser(command_detail, args)
-
-    def test_parse_short(self):
-        args = ["-ap", "8080", "--", "foo"]
-        option_dict: parser_smart.OptionNames = {
-            "short": {
-                "a": {"key": "a", "type": "bool"},
-                "p": {"key": "p", "type": "int"},
-            }
-        }
-        values = {}
-        arg = args.pop(0)
-        parser_smart.parse_short_option(arg, args, option_dict, values)
-        self.assertEqual(args, ["--", "foo"])
-        self.assertTrue(values["a"])
-        self.assertEqual(values["p"], 8080)
-
-    def test_long_no_int(self):
-        args = ["--num"]
+            parser_smart.parser({}, ["--version"])
         command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "num", "type": "int", "cmd": ["--num"]},
-            ]
+            "cmdline": {"version_option": ["--cmd-version"]}
         }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
+        with self.assertRaises(parser_smart.SkewerShowVersionException):
+            parser_smart.parser(command_detail, ["--cmd-version"])
+        with self.assertRaises(parser_smart.SkewerValueError):
+            parser_smart.parser(command_detail, ["--version"])
 
-    def test_long_no_str(self):
-        args = ["--str"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "str", "type": "string", "cmd": ["--str"]},
-            ]
-        }
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, args)
-
-    def test_short_bool_false(self):
-        args = ["-b=false"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_off(self):
-        args = ["-b=off"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_no(self):
-        args = ["-b=no"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_f(self):
-        args = ["-b=f"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_0(self):
-        args = ["-b=0"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_empty(self):
-        args = ["-b="]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_true(self):
-        args = ["-b=true"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_on(self):
-        args = ["-b=on"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_yes(self):
-        args = ["-b=yes"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_t(self):
-        args = ["-b=t"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_1(self):
-        args = ["-b=1"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_anystring(self):
-        args = ["-b=anystring"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_long_bool_false(self):
-        args = ["--bool=false"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_off(self):
-        args = ["--bool=off"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_no(self):
-        args = ["--bool=no"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_f(self):
-        args = ["--bool=f"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_0(self):
-        args = ["--bool=0"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_empty(self):
-        args = ["--bool="]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_true(self):
-        args = ["--bool=true"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_on(self):
-        args = ["--bool=on"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_yes(self):
-        args = ["--bool=yes"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_t(self):
-        args = ["--bool=t"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_1(self):
-        args = ["--bool=1"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_anystring(self):
-        args = ["--bool=anystring"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_short_bool_FALSE(self):
-        args = ["-b=FALSE"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_OFF(self):
-        args = ["-b=OFF"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_NO(self):
-        args = ["-b=NO"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_F(self):
-        args = ["-b=F"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["b"])
-
-    def test_short_bool_TRUE(self):
-        args = ["-b=TRUE"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_ON(self):
-        args = ["-b=ON"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_YES(self):
-        args = ["-b=YES"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_short_bool_T(self):
-        args = ["-b=T"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["b"])
-
-    def test_long_bool_FALSE(self):
-        args = ["--bool=FALSE"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_OFF(self):
-        args = ["--bool=OFF"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_NO(self):
-        args = ["--bool=NO"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_F(self):
-        args = ["--bool=F"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertFalse(opts["bool"])
-
-    def test_long_bool_TRUE(self):
-        args = ["--bool=TRUE"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_ON(self):
-        args = ["--bool=ON"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_YES(self):
-        args = ["--bool=YES"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_long_bool_T(self):
-        args = ["--bool=T"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["--bool"]}]
-        }
-        opts, _ = parser_smart.parser(command_detail, args)
-        self.assertTrue(opts["bool"])
-
-    def test_fatal_error_invalid_option_name_in_setting(self):
-        args = ["-a"]
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "options": [
-                {"key": "b", "type": "bool", "cmd": ["b"]},
-            ]
-        }
-        with self.assertRaises(SkewerFatalError):
-            parser_smart.parser(command_detail, args)
-
-    def test_fatal_error_invalid_type_name_in_setting(self):
+    def test_parser_fatal_error_invalid_option_type(self):
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "b", "type": "invalid_type", "cmd": ["-b", "--bool"]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
 
-    def test_help_option(self):
+    def test_parser_fatal_error_help_option(self):
         command_detail: parser_smart.SkewerCommandDetail = {
             "cmdline": {"help_option": ["-aa"]}
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "cmdline": {"help_option": ["--a"]}
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "cmdline": {"help_option": ["--AAAA"]}
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "cmdline": {"help_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
-        }
-        with self.assertRaises(SkewerShowHelpException):
-            parser_smart.parser(command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"])
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, ["-h"])
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, ["--help"])
 
-    def test_version_option(self):
+    def test_parser_fatal_error_version_option(self):
         command_detail: parser_smart.SkewerCommandDetail = {
             "cmdline": {"version_option": ["-aa"]}
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "cmdline": {"version_option": ["--a"]}
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "cmdline": {"version_option": ["--AAAA"]}
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
-        command_detail: parser_smart.SkewerCommandDetail = {
-            "cmdline": {"version_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
-        }
-        with self.assertRaises(SkewerShowVersionException):
-            parser_smart.parser(command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"])
-        with self.assertRaises(SkewerValueError):
-            parser_smart.parser(command_detail, ["--version"])
 
-    def test_invalid_options(self):
+    def test_parser_fatal_error_invalid_option_name(self):
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": [""]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": ["a"]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": ["-ab"]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": ["--A"]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": ["--0"]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
         command_detail: parser_smart.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "invalidtype", "cmd": ["--abc"]},
             ]
         }
-        with self.assertRaises(SkewerFatalError):
+        with self.assertRaises(parser_smart.SkewerFatalError):
             parser_smart.parser(command_detail, [])
+
+    def test_parser_various_arguments(self):
+        command_detail: parser_smart.SkewerCommandDetail = {
+            "options": [
+                {"key": "allow", "type": "bool", "cmd": ["-a", "--allow"]},
+                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
+                {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
+            ]
+        }
+        opts, unnamed = parser_smart.parser(command_detail, [])
+        self.assertFalse("allow" in opts)
+        self.assertFalse("prefix" in opts)
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["v1", "v2", "v3"])
+        self.assertFalse("allow" in opts)
+        self.assertFalse("prefix" in opts)
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, ["v1", "v2", "v3"])
+        opts, unnamed = parser_smart.parser(command_detail, ["-a"])
+        self.assertTrue(opts["allow"])
+        self.assertFalse("prefix" in opts)
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-p=12380"])
+        self.assertFalse("allow" in opts)
+        self.assertFalse("prefix" in opts)
+        self.assertEqual(opts["port"], 12380)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(command_detail, ["-x=BEEF"])
+        self.assertFalse("allow" in opts)
+        self.assertEqual(opts["prefix"], "BEEF")
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = parser_smart.parser(
+            command_detail, ["-ap", "8080", "--prefix=BEEF", "jkl", "mno"]
+        )
+        self.assertTrue(opts["allow"])
+        self.assertEqual(opts["prefix"], "BEEF")
+        self.assertEqual(opts["port"], 8080)
+        self.assertEqual(unnamed, ["jkl", "mno"])
+        opts, unnamed = parser_smart.parser(
+            command_detail, ["-ap", "8080", "--", "--prefix=BEEF", "jkl", "mno"]
+        )
+        self.assertTrue(opts["allow"])
+        self.assertEqual(opts["port"], 8080)
+        self.assertFalse("prefix" in opts)
+        self.assertEqual(unnamed, ["--prefix=BEEF", "jkl", "mno"])

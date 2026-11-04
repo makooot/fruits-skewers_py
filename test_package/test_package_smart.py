@@ -9,411 +9,386 @@ class TestPackageSmart(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_empty(self):
-        args = []
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
-        _, unnamed = fruits_skewers.skewer_parser(command_detail, args)
+    def test_parser_no_options(self):
+        opts, unnamed = fruits_skewers.skewer_parser({}, [])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, [])
-
-    def test_args_1(self):
-        args = ["v1"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
-        _, unnamed = fruits_skewers.skewer_parser(command_detail, args)
+        opts, unnamed = fruits_skewers.skewer_parser({}, ["v1"])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, ["v1"])
-
-    def test_args_2(self):
-        args = ["v1", "v2"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
-        _, unnamed = fruits_skewers.skewer_parser(command_detail, args)
+        opts, unnamed = fruits_skewers.skewer_parser({}, ["v1", "v2"])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, ["v1", "v2"])
-
-    def test_args_3(self):
-        args = ["v1", "v2", "v3"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
-        _, unnamed = fruits_skewers.skewer_parser(command_detail, args)
+        opts, unnamed = fruits_skewers.skewer_parser({}, ["v1", "v2", "v3"])
+        self.assertEqual(opts, {})
+        self.assertEqual(unnamed, ["v1", "v2", "v3"])
+        opts, unnamed = fruits_skewers.skewer_parser({}, ["--", "v1", "v2", "v3"])
+        self.assertEqual(opts, {})
         self.assertEqual(unnamed, ["v1", "v2", "v3"])
 
-    def test_short_bool(self):
-        args = ["-b"]
+    def test_parser_invalid_option(self):
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser({}, ["-#"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser({}, ["--####"])
+
+    def test_parser_undefined_option(self):
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser({}, ["-X"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser({}, ["--xxxx"])
+
+    def test_parser_bool_option(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "b", "type": "bool", "cmd": ["-b"]}]
+            "options": [{"key": "b", "type": "bool", "cmd": ["-b", "--bbb"]}]
         }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b"])
         self.assertTrue(opts["b"])
-
-    def test_short_string_connected(self):
-        args = ["-s=foo"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "s", "type": "string", "cmd": ["-s"]}]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["s"], "foo")
-
-    def test_short_string_seperated(self):
-        args = ["-s", "foo"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "s", "type": "string", "cmd": ["-s"]}]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["s"], "foo")
-
-    def test_short_int_connected(self):
-        args = ["-n=123"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "n", "type": "int", "cmd": ["-n"]}]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["n"], 123)
-
-    def test_short_int_seperated(self):
-        args = ["-n", "123"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "n", "type": "int", "cmd": ["-n"]}]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["n"], 123)
-
-    def test_short_chain_bbb(self):
-        args = ["-abc"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "c", "type": "bool", "cmd": ["-c"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertTrue(opts["a"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=true"])
         self.assertTrue(opts["b"])
-        self.assertTrue(opts["c"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=TRUE"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=t"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=T"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=on"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=ON"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=yes"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=YES"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=Y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=1"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=anything"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=false"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=FALSE"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=F"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=off"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=OFF"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=no"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=NO"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=n"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=N"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=0"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b="])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=true"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=TRUE"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=t"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=T"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=on"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=ON"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=yes"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=YES"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=Y"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=1"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=anything"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=false"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=FALSE"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=F"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=off"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=OFF"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=no"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=NO"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=n"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=N"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb=0"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb="])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
 
-    def test_short_chain_bbs_empty(self):
-        args = ["-abs="]
+    def test_parser_string_option(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [{"key": "s", "type": "string", "cmd": ["-s", "--sss"]}]
+        }
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-s=foo"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-s", "foo"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--sss=foo"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--sss", "foo"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-s"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--sss"])
+
+    def test_parser_int_option(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [{"key": "n", "type": "int", "cmd": ["-n", "--nnn"]}]
+        }
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-n=123"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-n", "123"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--nnn=123"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--nnn", "123"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-n"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-n=NaN"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-n", "NaN"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--nnn"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--nnn=NaN"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--nnn", "NaN"])
+
+    def test_parser_chaining_short_options(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": ["-a"]},
                 {"key": "b", "type": "bool", "cmd": ["-b"]},
                 {"key": "c", "type": "bool", "cmd": ["-c"]},
                 {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertTrue(opts["a"])
-        self.assertTrue(opts["b"])
-        self.assertEqual(opts["s"], "")
-
-    def test_short_chain_bbs_any(self):
-        args = ["-abs=foo"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
-                {"key": "c", "type": "bool", "cmd": ["-c"]},
-                {"key": "s", "type": "string", "cmd": ["-s"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertTrue(opts["a"])
-        self.assertTrue(opts["b"])
-        self.assertEqual(opts["s"], "foo")
-
-    def test_short_chain_bbi(self):
-        args = ["-abn=1234"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "a", "type": "bool", "cmd": ["-a"]},
-                {"key": "b", "type": "bool", "cmd": ["-b"]},
                 {"key": "n", "type": "int", "cmd": ["-n"]},
             ]
         }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abc"])
         self.assertTrue(opts["a"])
         self.assertTrue(opts["b"])
-        self.assertEqual(opts["n"], 1234)
-
-    def test_long_bool(self):
-        args = ["--allow"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "allow", "type": "bool", "cmd": ["--allow"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertTrue(opts["allow"])
-
-    def test_long_string_connected_empty(self):
-        args = ["--prefix="]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["prefix"], "")
-
-    def test_long_string_connected_any(self):
-        args = ["--prefix=I:"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["prefix"], "I:")
-
-    def test_long_string_seperated(self):
-        args = ["--prefix", "I:"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "prefix", "type": "string", "cmd": ["--prefix"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["prefix"], "I:")
-
-    def test_long_int_connected(self):
-        args = ["--port=8080"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_long_int_seperated(self):
-        args = ["--port", "8080"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_both_def_short(self):
-        args = ["-p=8080"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_both_def_long(self):
-        args = ["--port=8080"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-            ]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertEqual(opts["port"], 8080)
-
-    def test_mix(self):
-        args = ["-ap", "8080", "--prefix=BEEF", "jkl", "mno"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "allow", "type": "bool", "cmd": ["-a", "--allow"]},
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-                {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
-            ]
-        }
-        opts, unnamed = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertTrue(opts["allow"])
-        self.assertEqual(opts["prefix"], "BEEF")
-        self.assertEqual(opts["port"], 8080)
-        self.assertEqual(unnamed, ["jkl", "mno"])
-
-    def test_double_hyphen(self):
-        args = ["-ap", "8080", "--", "--prefix=BEEF", "jkl", "mno"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "allow", "type": "bool", "cmd": ["-a", "--allow"]},
-                {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
-                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
-            ]
-        }
-        opts, unnamed = fruits_skewers.skewer_parser(command_detail, args)
-        self.assertTrue(opts["allow"])
-        self.assertEqual(opts["port"], 8080)
-        self.assertEqual(unnamed, ["--prefix=BEEF", "jkl", "mno"])
-
-    def test_short_invalid_name(self):
-        args = ["-#"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
+        self.assertTrue(opts["c"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abc=t"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertTrue(opts["c"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abc=f"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertFalse(opts["c"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abs=foo"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abs", "foo"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(opts["s"], "foo")
+        self.assertEqual(unnamed, [])
         with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_short_undefined_name(self):
-        args = ["-q"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
+            fruits_skewers.skewer_parser(command_detail, ["-asb"])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abn=123"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-abn", "123"])
+        self.assertTrue(opts["a"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(opts["n"], 123)
+        self.assertEqual(unnamed, [])
         with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_long_invalid_name(self):
-        args = ["--###-###"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
+            fruits_skewers.skewer_parser(command_detail, ["-anb"])
         with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
+            fruits_skewers.skewer_parser(command_detail, ["-aX"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-Xa"])
 
-    def test_invlid_int_1(self):
-        args = ["--port", "0A"]
+    def test_parser_same_option_multiple_times(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
             "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
+                {"key": "b", "type": "bool", "cmd": ["-b", "--bbb"]},
+                {"key": "n", "type": "int", "cmd": ["-n", "--nnn"]},
+                {"key": "s", "type": "string", "cmd": ["-s", "--sss"]},
             ]
         }
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b", "-b"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=f", "-b"])
+        self.assertTrue(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b", "-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b=f", "-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-bb=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["--bbb", "-b=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-b", "--bbb=f"])
+        self.assertFalse(opts["b"])
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-n=1", "-n=2"])
+        self.assertEqual(opts["n"], 2)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["--nnn=1", "-n=2"]
+        )
+        self.assertEqual(opts["n"], 2)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["-n=1", "--nnn=2"]
+        )
+        self.assertEqual(opts["n"], 2)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["-s=abc", "-s=xyz"]
+        )
+        self.assertEqual(opts["s"], "xyz")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["--sss=abc", "-s=xyz"]
+        )
+        self.assertEqual(opts["s"], "xyz")
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["-s=abc", "--sss=xyz"]
+        )
+        self.assertEqual(opts["s"], "xyz")
+        self.assertEqual(unnamed, [])
 
-    def test_invlid_int_2(self):
-        args = ["--port=0A"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_invlid_int_3(self):
-        args = ["-p", "0A"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_invlid_int_4(self):
-        args = ["-p=0A"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "port", "type": "int", "cmd": ["--port"]},
-            ]
-        }
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_invalid_name_1(self):
-        args = ["--verbose"]
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser({}, args)
-
-    def test_invalid_name_2(self):
-        args = ["-v"]
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser({}, args)
-
-    def test_short_showhelp_exception(self):
-        args = ["-h"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
+    def test_parser_help_option(self):
         with self.assertRaises(fruits_skewers.SkewerShowHelpException):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_long_showhelp_exception(self):
-        args = ["--help"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
+            fruits_skewers.skewer_parser({}, ["-h"])
         with self.assertRaises(fruits_skewers.SkewerShowHelpException):
-            fruits_skewers.skewer_parser(command_detail, args)
+            fruits_skewers.skewer_parser({}, ["--help"])
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "cmdline": {"help_option": ["--cmd-help"]}
+        }
+        with self.assertRaises(fruits_skewers.SkewerShowHelpException):
+            fruits_skewers.skewer_parser(command_detail, ["--cmd-help"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["-h"])
+        with self.assertRaises(fruits_skewers.SkewerValueError):
+            fruits_skewers.skewer_parser(command_detail, ["--help"])
 
-    def test_long_showversion_exception(self):
-        args = ["--version"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {}
+    def test_parser_version_option(self):
         with self.assertRaises(fruits_skewers.SkewerShowVersionException):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_long_bool_value_truely(self):
+            fruits_skewers.skewer_parser({}, ["--version"])
         command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["-b", "--bool"]}]
+            "cmdline": {"version_option": ["--cmd-version"]}
         }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=y"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=yes"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=t"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=true"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=on"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=1"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=anystring"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=y"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=yes"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=t"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=true"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=on"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=1"])
-        self.assertTrue(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=anystring"])
-        self.assertTrue(opts["bool"])
+        with self.assertRaises(fruits_skewers.SkewerShowVersionException):
+            fruits_skewers.skewer_parser(command_detail, ["--cmd-version"])
 
-    def test_long_bool_value_falsely(self):
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [{"key": "bool", "type": "bool", "cmd": ["-b", "--bool"]}]
-        }
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=n"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=no"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=f"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=false"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=off"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool=0"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["--bool="])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=n"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=no"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=f"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=false"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=off"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b=0"])
-        self.assertFalse(opts["bool"])
-        opts, _ = fruits_skewers.skewer_parser(command_detail, ["-b="])
-        self.assertFalse(opts["bool"])
-
-    def test_fatal_error_invalid_option_name_in_setting(self):
-        args = ["-a"]
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "options": [
-                {"key": "b", "type": "bool", "cmd": ["b"]},
-            ]
-        }
-        with self.assertRaises(fruits_skewers.SkewerFatalError):
-            fruits_skewers.skewer_parser(command_detail, args)
-
-    def test_fatal_error_invalid_type_name_in_setting(self):
+    def test_parser_fatal_error_invalid_option_type(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
             "options": [
                 {"key": "b", "type": "invalid_type", "cmd": ["-b", "--bool"]},
             ]
         }
         with self.assertRaises(fruits_skewers.SkewerFatalError):
-            fruits_skewers.skewer_parser(command_detail, ["-b"])
-        with self.assertRaises(fruits_skewers.SkewerFatalError):
-            fruits_skewers.skewer_parser(command_detail, ["--bool"])
+            fruits_skewers.skewer_parser(command_detail, [])
 
-    def test_help_option(self):
+    def test_parser_fatal_error_help_option(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
             "cmdline": {"help_option": ["-aa"]}
         }
@@ -429,19 +404,8 @@ class TestPackageSmart(unittest.TestCase):
         }
         with self.assertRaises(fruits_skewers.SkewerFatalError):
             fruits_skewers.skewer_parser(command_detail, [])
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "cmdline": {"help_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
-        }
-        with self.assertRaises(fruits_skewers.SkewerShowHelpException):
-            fruits_skewers.skewer_parser(
-                command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]
-            )
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, ["-h"])
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, ["--help"])
 
-    def test_version_option(self):
+    def test_parser_fatal_error_version_option(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
             "cmdline": {"version_option": ["-aa"]}
         }
@@ -457,17 +421,8 @@ class TestPackageSmart(unittest.TestCase):
         }
         with self.assertRaises(fruits_skewers.SkewerFatalError):
             fruits_skewers.skewer_parser(command_detail, [])
-        command_detail: fruits_skewers.SkewerCommandDetail = {
-            "cmdline": {"version_option": ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]}
-        }
-        with self.assertRaises(fruits_skewers.SkewerShowVersionException):
-            fruits_skewers.skewer_parser(
-                command_detail, ["--abcd-efgh-ijkl-mnop-qrst-uvwx-yz"]
-            )
-        with self.assertRaises(fruits_skewers.SkewerValueError):
-            fruits_skewers.skewer_parser(command_detail, ["--version"])
 
-    def test_invalid_options(self):
+    def test_parser_fatal_error_invalid_option_name(self):
         command_detail: fruits_skewers.SkewerCommandDetail = {
             "options": [
                 {"key": "a", "type": "bool", "cmd": [""]},
@@ -510,3 +465,51 @@ class TestPackageSmart(unittest.TestCase):
         }
         with self.assertRaises(fruits_skewers.SkewerFatalError):
             fruits_skewers.skewer_parser(command_detail, [])
+
+    def test_parser_various_arguments(self):
+        command_detail: fruits_skewers.SkewerCommandDetail = {
+            "options": [
+                {"key": "allow", "type": "bool", "cmd": ["-a", "--allow"]},
+                {"key": "port", "type": "int", "cmd": ["-p", "--port"]},
+                {"key": "prefix", "type": "string", "cmd": ["-x", "--prefix"]},
+            ]
+        }
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, [])
+        self.assertFalse("allow" in opts)
+        self.assertFalse("prefix" in opts)
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["v1", "v2", "v3"])
+        self.assertFalse("allow" in opts)
+        self.assertFalse("prefix" in opts)
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, ["v1", "v2", "v3"])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-a"])
+        self.assertTrue(opts["allow"])
+        self.assertFalse("prefix" in opts)
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-p=12380"])
+        self.assertFalse("allow" in opts)
+        self.assertFalse("prefix" in opts)
+        self.assertEqual(opts["port"], 12380)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(command_detail, ["-x=BEEF"])
+        self.assertFalse("allow" in opts)
+        self.assertEqual(opts["prefix"], "BEEF")
+        self.assertFalse("port" in opts)
+        self.assertEqual(unnamed, [])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["-ap", "8080", "--prefix=BEEF", "jkl", "mno"]
+        )
+        self.assertTrue(opts["allow"])
+        self.assertEqual(opts["prefix"], "BEEF")
+        self.assertEqual(opts["port"], 8080)
+        self.assertEqual(unnamed, ["jkl", "mno"])
+        opts, unnamed = fruits_skewers.skewer_parser(
+            command_detail, ["-ap", "8080", "--", "--prefix=BEEF", "jkl", "mno"]
+        )
+        self.assertTrue(opts["allow"])
+        self.assertEqual(opts["port"], 8080)
+        self.assertFalse("prefix" in opts)
+        self.assertEqual(unnamed, ["--prefix=BEEF", "jkl", "mno"])
